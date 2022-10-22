@@ -13,8 +13,7 @@ locals {
       for value in lookup(var.model, "virtual_networking", []) : [
         for v in value.domain : {
           access_mode = lookup(v, "access_mode", local.VMM.domain.access_mode)
-          annotation = coalesce(lookup(v, "annotation", local.VMM.domain.annotation
-          ), local.defaults.annotation)
+          annotation = coalesce(lookup(v, "annotation", local.VMM.domain.annotation), var.annotation)
           control_knob          = lookup(v, "control_knob", local.VMM.domain.control_knob)
           delimiter             = lookup(v, "delimiter", local.VMM.domain.delimiter)
           dvs                   = value.virtual_switch_name
@@ -54,13 +53,13 @@ locals {
       for value in lookup(var.model, "virtual_networking", []) : [
         for v in value.controllers : {
           annotation = coalesce(lookup(v, "annotation", local.VMM.controllers.annotation
-          ), local.defaults.annotation)
+          ), var.annotation)
           datacenter     = lookup(v, "datacenter", local.VMM.controllers.datacenter)
           dvs            = value.virtual_switch_name
           dvs_version    = lookup(v, "dvs_version", local.VMM.controllers.dvs_version)
           hostname       = lookup(v, "hostname", local.VMM.controllers.hostname)
           management_epg = lookup(v, "management_epg", local.VMM.controllers.management_epg)
-          mgmt_epg_type = local.defaults.management_epgs[index(local.defaults.management_epgs.*.name,
+          mgmt_epg_type = var.management_epgs[index(var.management_epgs.*.name,
             lookup(v, "management_epg", local.VMM.controllers.management_epg))
           ].type
           monitoring_policy = lookup(v, "monitoring_policy", local.VMM.controllers.monitoring_policy)
@@ -82,7 +81,7 @@ locals {
       for key, value in lookup(var.model, "virtual_networking", []) : [
         for k, v in value.vswitch_policy : {
           annotation = coalesce(lookup(v, "annotation", local.VMM.vswitch_policy.annotation
-          ), local.defaults.annotation)
+          ), var.annotation)
           cdp_interface_policy = lookup(v, "cdp_interface_policy", "")
           dvs                  = value.virtual_switch_name
           enhanced_lag_policy = length(compact(
