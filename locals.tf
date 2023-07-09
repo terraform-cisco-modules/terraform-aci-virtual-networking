@@ -1,6 +1,6 @@
 locals {
-  defaults    = lookup(var.model, "defaults", {})
-  VMM         = local.defaults.virtual_networking
+  defaults    = yamldecode(file("${path.module}/defaults.yaml")).defaults.virtual_networking
+  VMM         = local.defaults
   vmm_netflow = local.VMM.vswitch_policy.vmm_netflow_export_policies
 
   #__________________________________________________________
@@ -13,7 +13,6 @@ locals {
       for value in lookup(var.model, "virtual_networking", []) : [
         for v in value.domain : {
           access_mode = lookup(v, "access_mode", local.VMM.domain.access_mode)
-          annotation = coalesce(lookup(v, "annotation", local.VMM.domain.annotation), var.annotation)
           control_knob          = lookup(v, "control_knob", local.VMM.domain.control_knob)
           delimiter             = lookup(v, "delimiter", local.VMM.domain.delimiter)
           dvs                   = value.virtual_switch_name
@@ -39,7 +38,6 @@ locals {
     for i in flatten([
       for value in lookup(var.model, "virtual_networking", []) : [
         for k, v in value.credentials : {
-          annotation  = local.vmm_domains["${value.virtual_switch_name}"].annotation
           dvs         = value.virtual_switch_name
           description = lookup(v, "description", local.VMM.credentials.description)
           password    = v.password
@@ -52,8 +50,6 @@ locals {
     for i in flatten([
       for value in lookup(var.model, "virtual_networking", []) : [
         for v in value.controllers : {
-          annotation = coalesce(lookup(v, "annotation", local.VMM.controllers.annotation
-          ), var.annotation)
           datacenter     = lookup(v, "datacenter", local.VMM.controllers.datacenter)
           dvs            = value.virtual_switch_name
           dvs_version    = lookup(v, "dvs_version", local.VMM.controllers.dvs_version)
@@ -80,8 +76,6 @@ locals {
     for i in flatten([
       for key, value in lookup(var.model, "virtual_networking", []) : [
         for k, v in value.vswitch_policy : {
-          annotation = coalesce(lookup(v, "annotation", local.VMM.vswitch_policy.annotation
-          ), var.annotation)
           cdp_interface_policy = lookup(v, "cdp_interface_policy", "")
           dvs                  = value.virtual_switch_name
           enhanced_lag_policy = length(compact(
