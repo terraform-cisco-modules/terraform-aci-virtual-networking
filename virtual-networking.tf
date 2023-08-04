@@ -10,7 +10,7 @@ ________________________________________________________________________________
 resource "aci_vmm_domain" "vmm_domains" {
   for_each            = local.vmm_domains
   access_mode         = each.value.access_mode
-  annotation          = each.value.annotation
+  #annotation          = each.value.annotation
   ctrl_knob           = each.value.control_knob
   delimiter           = each.value.delimiter
   enable_tag          = each.value.enable_tag_collection == true ? "yes" : "no"
